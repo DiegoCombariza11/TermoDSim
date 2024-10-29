@@ -21,7 +21,16 @@ function initializeSegments() {
             segmentContainer.appendChild(segment);
         }
     });
+
+    const heatSinkSegments = document.getElementById("heat-sink-segments");
+    heatSinkSegments.innerHTML = '';
+    for (let i = 0; i < 3; i++) {
+        const segment = document.createElement('div');
+        segment.className = 'segment';
+        heatSinkSegments.appendChild(segment);
+    }
 }
+
 
 initializeSegments();
 
@@ -36,7 +45,7 @@ function startSimulation() {
     interval = setInterval(() => {
         updateTemperatures();
         updateVisuals();
-    }, 1000);
+    }, 100);
 }
 
 function stopSimulation() {
@@ -52,9 +61,11 @@ function updateTemperatures() {
         }
     });
 
-    const finalSegmentTemp = materials[materials.length - 1].temp[9];
-    const heatFlowToSink = materials[materials.length - 1].conductivity * (finalSegmentTemp - heatSinkTemp);
-    heatSinkTemp += heatFlowToSink * 0.01;
+    materials.forEach((material, index) => {
+        const finalSegmentTemp = material.temp[material.temp.length - 1];
+        const heatFlowToSink = material.conductivity * (finalSegmentTemp - heatSinkTemp);
+        heatSinkTemp += heatFlowToSink * 0.01 / 3; // Dividir en 3 partes
+    });
 }
 
 function updateVisuals() {
@@ -73,9 +84,19 @@ function updateVisuals() {
         document.getElementById(`material${material.id}-temp-display`).textContent = `${avgTemp}°C`;
     });
 
-    document.getElementById("heat-sink").style.backgroundColor = tempToColor(heatSinkTemp);
-}
+    // Actualizar los segmentos del receptor de calor
+    const heatSinkSegments = document.querySelectorAll("#heat-sink-segments .segment");
+    let heatSinkTotalTemp = 0;
 
+    materials.forEach((material, index) => {
+        const segmentTemp = material.temp[material.temp.length - 1];
+        heatSinkSegments[index].style.backgroundColor = tempToColor(segmentTemp);
+        heatSinkTotalTemp += segmentTemp;
+    });
+
+    const avgHeatSinkTemp = (heatSinkTotalTemp / 3).toFixed(1);
+    document.getElementById("heat-sink-temp-display").textContent = `${avgHeatSinkTemp}°C`;
+}
 function tempToColor(temp) {
     let r, g, b;
     if (temp < 50) {

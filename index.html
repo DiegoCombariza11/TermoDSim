@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    
     <div class="container">
+        <h1 class="title">Simulador de Transferencia de Calor</h1>
         <div class="controls">
             <label>Temperatura de Fuente de Calor:
                 <input type="number" id="heat-source-temp" placeholder="Temperatura (°C)" onchange="setHeatSourceTemp()">
@@ -37,7 +39,12 @@
                     <div class="temp-display" id="material3-temp-display">20°C</div>
                 </div>
             </div>
-            <div class="heat-sink" id="heat-sink">Receptor de Calor</div>
+            <div class="heat-sink" id="heat-sink">
+                <p>Receptor de Calor</p>
+                <div class="segments" id="heat-sink-segments"></div>
+                <div class="temp-display" id="heat-sink-temp-display">20°C</div>
+            </div>
+            
         </div>
     </div>
     <script src="script.js"></script>
