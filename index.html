@@ -1,32 +1,46 @@
-<!-- index.html -->
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador de Transferencia de Calor</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="info-panel">
-        <h2>Materiales</h2>
-        <select id="materialSelector">
-            <option value="metal">Metal</option>
-            <option value="madera">Madera</option>
-            <option value="vidrio">Vidrio</option>
-        </select>
-        <table id="materialInfoTable">
-            <tr><th>Material</th><th>Conductividad</th><th>Densidad</th></tr>
-            <!-- Fila dinámica según el material seleccionado -->
-        </table>
-        <div id="termometro">
-            <p>Temperatura: <span id="tempValue">0</span> °C</p>
+    <div class="container">
+        <div class="controls">
+            <label>Temperatura de Fuente de Calor:
+                <input type="number" id="heat-source-temp" placeholder="Temperatura (°C)" onchange="setHeatSourceTemp()">
+            </label>
+            <button onclick="startSimulation()">Iniciar Simulación</button>
+            <button onclick="stopSimulation()">Detener Simulación</button>
+            <button onclick="resetSimulation()">Reiniciar Simulación</button>
+            <button onclick="showInfo()">Mostrar Info</button>
+        </div>
+
+        <div class="simulator">
+            <div class="heat-source" id="heat-source">Fuente de Calor</div>
+            <div class="materials">
+                <div class="material" id="material1" onclick="editMaterial(1)">
+                    <p>Material 1</p>
+                    <div class="segments" id="material1-segments"></div>
+                    <div class="temp-display" id="material1-temp-display">20°C</div>
+                </div>
+                <div class="material" id="material2" onclick="editMaterial(2)">
+                    <p>Material 2</p>
+                    <div class="segments" id="material2-segments"></div>
+                    <div class="temp-display" id="material2-temp-display">20°C</div>
+                </div>
+                <div class="material" id="material3" onclick="editMaterial(3)">
+                    <p>Material 3</p>
+                    <div class="segments" id="material3-segments"></div>
+                    <div class="temp-display" id="material3-temp-display">20°C</div>
+                </div>
+            </div>
+            <div class="heat-sink" id="heat-sink">Receptor de Calor</div>
         </div>
     </div>
-    <canvas id="temperatureChart" width="400" height="200"></canvas>
-
-    <script src="main.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
+
