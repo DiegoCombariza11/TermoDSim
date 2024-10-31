@@ -8,7 +8,7 @@ let materials = [
 
 let heatSourceTemp = 100;
 let interval;
-let heatSinkTemp = 20;
+let heatSinkTemp = 0;
 
 // Crear segmentos para cada material
 function initializeSegments() {
@@ -84,19 +84,13 @@ function updateVisuals() {
         document.getElementById(`material${material.id}-temp-display`).textContent = `${avgTemp}°C`;
     });
 
-    // Actualizar los segmentos del receptor de calor
-    const heatSinkSegments = document.querySelectorAll("#heat-sink-segments .segment");
-    let heatSinkTotalTemp = 0;
+    document.getElementById("heat-sink").style.backgroundColor = tempToColor(heatSinkTemp);
 
-    materials.forEach((material, index) => {
-        const segmentTemp = material.temp[material.temp.length - 1];
-        heatSinkSegments[index].style.backgroundColor = tempToColor(segmentTemp);
-        heatSinkTotalTemp += segmentTemp;
-    });
-
-    const avgHeatSinkTemp = (heatSinkTotalTemp / 3).toFixed(1);
-    document.getElementById("heat-sink-temp-display").textContent = `${avgHeatSinkTemp}°C`;
+    // Actualizar la tabla de información
+    updateInfoTable();
 }
+
+
 function tempToColor(temp) {
     let r, g, b;
     if (temp < 50) {
@@ -115,13 +109,73 @@ function tempToColor(temp) {
     return `rgb(${r}, ${g}, ${b})`;
 }
 
-function showInfo() {
-    let info = `Fuente de Calor: ${heatSourceTemp}°C\n`;
+function calculateEnergy(material) {
+    let totalEnergy = 0;
+    for (let i = 1; i < material.temp.length; i++) {
+        const deltaTemp = Math.abs(material.temp[i] - material.temp[i - 1]);
+        const segmentEnergy = material.conductivity * deltaTemp * 0.01; // Factor de tiempo
+        totalEnergy += segmentEnergy;
+    }
+    return totalEnergy.toFixed(2);
+}
+
+
+function updateInfoTable() {
+    const infoTable = document.getElementById("info-table");
+    infoTable.innerHTML = ''; // Clear previous content
+
+    const table = document.createElement("table");
+
+    // Table header
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Elemento</th>
+                <th>Temperatura Promedio (°C)</th>
+                <th>Conductividad</th>
+                <th>Energía Transferida (J)</th>
+            </tr>
+        </thead>
+    `;
+
+    const tbody = document.createElement("tbody");
+
+    // Heat Source row
+    let row = document.createElement("tr");
+    row.innerHTML = `
+        <td>Fuente de Calor</td>
+        <td>${heatSourceTemp}°C</td>
+        <td>-</td>
+        <td>-</td>
+    `;
+    tbody.appendChild(row);
+
+    // Materials rows
     materials.forEach(material => {
-        info += `Material ${material.id}: Temp Promedio = ${(material.temp.reduce((a, b) => a + b, 0) / material.temp.length).toFixed(1)}°C, Conductividad = ${material.conductivity}\n`;
+        const avgTemp = (material.temp.reduce((a, b) => a + b, 0) / material.temp.length).toFixed(1);
+        const energy = calculateEnergy(material);
+        row = document.createElement("tr");
+        row.innerHTML = `
+            <td>Material ${material.id}</td>
+            <td>${avgTemp}°C</td>
+            <td>${material.conductivity}</td>
+            <td>${energy} J</td>
+        `;
+        tbody.appendChild(row);
     });
-    info += `Receptor de Calor: ${heatSinkTemp.toFixed(1)}°C\n`;
-    alert(info);
+
+    // Heat Sink row
+    row = document.createElement("tr");
+    row.innerHTML = `
+        <td>Receptor de Calor</td>
+        <td>${heatSinkTemp.toFixed(1)}°C</td>
+        <td>-</td>
+        <td>-</td>
+    `;
+    tbody.appendChild(row);
+
+    table.appendChild(tbody);
+    infoTable.appendChild(table);
 }
 
 function editMaterial(id) {
