@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Transferencia de Calor</title>
+    <link rel="stylesheet" href="styles2.css">
+</head>
+<body>
+    
+    <div class="container">
+        <h1 class="title">Simulador de Transferencia de Calor</h1>
+        <div class="controls">
+            <label>Temperatura de Fuente de Calor:
+                <input type="number" id="heat-source-temp" placeholder="Temperatura (°C)" onchange="setHeatSourceTemp()">
+            </label>
+            <label>Área de Contacto:
+                <input type="number" id="area-input" placeholder="cm²" onchange="updateArea()">
+            </label>
+            <label>Grosor del Material:
+                <input type="number" id="thickness-input" placeholder="cm" onchange="updateThickness()">
+            </label>
+            <label>Conductividad:
+                <input type="number" id="conductivity-input" placeholder="W/(m·K)" onchange="updateConductivity()">
+            </label>
+            <button onclick="startSimulation()">Iniciar Simulación</button>
+            <button onclick="stopSimulation()">Detener Simulación</button>
+            <button onclick="resetSimulation()">Reiniciar Simulación</button>
+        </div>
+
+        <div class="simulator">
+            <div class="heat-source" id="heat-source">Fuente de Calor</div>
+            <div class="material" id="material">
+                <p>Material</p>
+                <div class="segments" id="material-segments"></div>
+                <div class="temp-display" id="material-temp-display">20°C</div>
+            </div>
+            <div class="heat-sink" id="heat-sink">Receptor de Calor</div>
+        </div>
+        
+        <div class="info-table">
+            <p><strong>Área de Contacto:</strong> <span id="info-area">200 cm²</span></p>
+            <p><strong>Grosor:</strong> <span id="info-thickness">10 cm</span></p>
+            <p><strong>Conductividad:</strong> <span id="info-conductivity">0.5 W/(m·K)</span></p>
+            <p><strong>Temperatura del Receptor:</strong> <span id="info-temp">20°C</span></p>
+            <p><strong>Energía Total Transferida:</strong> <span id="info-energy">0 J</span></p>
+            <p><strong>Energía Máxima Transferida:</strong> <span id="info-max-energy">0 J</span></p>
+        </div>
+    </div>
+    
+    <script src="script2.js"></script>
+</body>
+</html>
