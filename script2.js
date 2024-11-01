@@ -47,23 +47,41 @@ function stopSimulation() {
 }
 
 function updateTemperatures() {
-    const timeStep = 0.1; // Time step in seconds
+    const timeStep = 0.1; // Paso de tiempo en segundos
+    const specificHeatCapacity = 1000; // Calor específico aproximado en J/(kg·K)
+    const maxHeatFlow = 1000; // Limitar el flujo de calor para evitar inestabilidades
+
+    let instantaneousEnergy = 0; // Energía transferida en este intervalo
 
     for (let i = 0; i < material.temp.length; i++) {
         const previousTemp = i === 0 ? heatSourceTemp : material.temp[i - 1];
         const tempDifference = previousTemp - material.temp[i];
-        const heatFlow = (material.conductivity * material.area * tempDifference) / material.thickness;
-        const tempChange = heatFlow * timeStep / (material.area * material.thickness * 1000); // Adjust for specific heat capacity
 
-        // Update the temperature and accumulate energy
+        // Calcular flujo de calor con límite
+        let heatFlow = (material.conductivity * material.area * tempDifference) / material.thickness;
+        heatFlow = Math.max(Math.min(heatFlow, maxHeatFlow), -maxHeatFlow);
+
+        // Cambio de temperatura en el segmento
+        const tempChange = heatFlow * timeStep / (material.area * material.thickness * specificHeatCapacity);
         material.temp[i] += tempChange;
-        material.energy += Math.abs(heatFlow * timeStep);
-        material.maxEnergy = Math.max(material.maxEnergy, material.energy);
+
+        // Limitar la temperatura del segmento al rango de la fuente de calor
+        material.temp[i] = Math.min(heatSourceTemp, Math.max(material.temp[i], heatSinkTemp));
+
+        // Acumular la energía transferida en este instante
+        instantaneousEnergy += Math.abs(heatFlow * timeStep);
+        material.maxEnergy = Math.max(material.maxEnergy, instantaneousEnergy);
     }
 
-    // Update heat sink temperature to reflect the last segment's temperature
-    heatSinkTemp = material.temp[material.temp.length - 1];
+    // Limitar la temperatura del receptor al último segmento
+    heatSinkTemp = Math.min(heatSourceTemp, Math.max(material.temp[material.temp.length - 1], heatSinkTemp));
+
+    // Guardar la energía transferida en tiempo real para mostrarla en la tabla
+    material.instantaneousEnergy = instantaneousEnergy;
 }
+
+
+
 
 function updateVisuals() {
     const segments = document.querySelectorAll("#material-segments .segment");
@@ -80,13 +98,14 @@ function updateVisuals() {
 }
 
 function updateInfoTable() {
-    document.getElementById("info-area").textContent = `${(material.area * 10000).toFixed(1)} cm²`; // Convert m² to cm²
-    document.getElementById("info-thickness").textContent = `${(material.thickness * 100).toFixed(1)} cm`; // Convert m to cm
+    document.getElementById("info-area").textContent = `${(material.area * 10000).toFixed(1)} cm²`; // Convertir m² a cm²
+    document.getElementById("info-thickness").textContent = `${(material.thickness * 100).toFixed(1)} cm`; // Convertir m a cm
     document.getElementById("info-conductivity").textContent = `${material.conductivity.toFixed(2)} W/(m·K)`;
     document.getElementById("info-temp").textContent = `${heatSinkTemp.toFixed(1)}°C`;
-    document.getElementById("info-energy").textContent = `${material.energy.toFixed(2)} J`;
-    document.getElementById("info-max-energy").textContent = `${material.maxEnergy.toFixed(2)} J`;
+    document.getElementById("info-energy").textContent = `${material.instantaneousEnergy.toFixed(2)} J`; // Energía en tiempo real
+    document.getElementById("info-max-energy").textContent = `${material.maxEnergy.toFixed(2)} J`; // Energía máxima alcanzada
 }
+
 
 // Convert temperature to color for visualization
 function tempToColor(temp) {
