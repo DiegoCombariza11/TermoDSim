@@ -34,6 +34,11 @@ function initializeSegments() {
 
 initializeSegments();
 
+function showInfo() {
+    window.location.href = 'index2.html'; 
+}
+
+
 function setHeatSourceTemp() {
     const input = document.getElementById('heat-source-temp').value;
     heatSourceTemp = parseFloat(input) || 100;
