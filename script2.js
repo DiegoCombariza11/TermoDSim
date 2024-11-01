@@ -20,7 +20,7 @@ function initializeSegments() {
     segmentContainer.innerHTML = '';
     for (let i = 0; i < 10; i++) {
         const segment = document.createElement('div');
-        segment.className = 'segment';
+        segment.className = 'segment bg-gray-300'; // Color de fondo visible para cada segmento
         segmentContainer.appendChild(segment);
     }
 }
@@ -128,15 +128,18 @@ function tempToColor(temp) {
 
 function updateArea() {
     const areaInput = parseFloat(document.getElementById("area-input").value);
-    material.area = (areaInput || 200) / 10000; // Convert cm² to m²
-    document.documentElement.style.setProperty('--material-height', `${areaInput || 200}px`);
+    material.area = (areaInput || 200) / 10000; // Convertir cm² a m²
+    const height = (areaInput || 200); // Altura del material en px (a modo de ejemplo)
+    document.getElementById("material-segments").style.setProperty('--material-height', `${height}px`);
 }
 
 function updateThickness() {
     const thicknessInput = parseFloat(document.getElementById("thickness-input").value);
-    material.thickness = (thicknessInput || 10) / 100; // Convert cm to m
-    document.documentElement.style.setProperty('--material-width', `${(thicknessInput || 10) * 20}px`);
+    material.thickness = (thicknessInput || 10) / 100; // Convertir cm a m
+    const width = (thicknessInput || 10) * 20; // Ancho del material en px (ajustado para visibilidad)
+    document.getElementById("material-segments").style.setProperty('--material-width', `${width}px`);
 }
+
 
 function updateConductivity() {
     material.conductivity = parseFloat(document.getElementById("conductivity-input").value) || 0.5;
